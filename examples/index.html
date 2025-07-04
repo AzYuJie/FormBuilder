@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FormBuilder SDK 示例</title>
+  <style>
+    body {
+      font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f7fa;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background-color: #fff;
+      border-radius: 4px;
+      box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+      padding: 20px;
+    }
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #e4e7ed;
+      margin-bottom: 20px;
+    }
+    .tab {
+      padding: 10px 20px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.3s;
+    }
+    .tab.active {
+      color: #409eff;
+      border-bottom-color: #409eff;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .form-container {
+      min-height: 600px;
+      border: 1px solid #dcdfe6;
+      border-radius: 4px;
+    }
+    .button {
+      display: inline-block;
+      padding: 8px 16px;
+      background-color: #409eff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+    .button:hover {
+      background-color: #66b1ff;
+    }
+    .code-display {
+      margin-top: 20px;
+      background-color: #f5f7fa;
+      border: 1px solid #dcdfe6;
+      border-radius: 4px;
+      padding: 15px;
+      font-family: monospace;
+      white-space: pre-wrap;
+      max-height: 300px;
+      overflow: auto;
+    }
+    h1, h2 {
+      color: #303133;
+    }
+    p {
+      color: #606266;
+    }
+    /* 运行时控制样式 */
+    .runtime-controls {
+      margin-bottom: 20px;
+      padding: 15px;
+      background-color: #f5f7fa;
+      border: 1px solid #dcdfe6;
+      border-radius: 4px;
+    }
+    .control-group {
+      display: inline-block;
+      margin-right: 15px;
+      margin-bottom: 10px;
+    }
+    .control-group label {
+      margin-right: 5px;
+      font-size: 14px;
+      color: #606266;
+    }
+    .control-group select,
+    .control-group input {
+      padding: 6px 8px;
+      border: 1px solid #dcdfe6;
+      border-radius: 4px;
+      font-size: 14px;
+      color: #303133;
+    }
+    .control-group input {
+      width: 80px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>FormBuilder SDK 示例</h1>
+    <p>这个示例展示了FormBuilder SDK的两种模式：设计模式和运行模式。</p>
+    
+    <div class="tabs">
+      <div class="tab active" data-tab="design">设计模式</div>
+      <div class="tab" data-tab="runtime">运行模式</div>
+    </div>
+    
+    <div class="tab-content active" id="design-tab">
+      <h2>表单设计器</h2>
+      <div id="form-designer-container" class="form-container"></div>
+      <button id="save-design" class="button">保存设计</button>
+      <div id="design-json" class="code-display" style="display: none;">// 设计JSON将显示在这里</div>
+    </div>
+    
+    <div class="tab-content" id="runtime-tab">
+      <h2>表单运行时</h2>
+      <div id="form-runtime-container" class="form-container"></div>
+      <div id="form-data" class="code-display" style="display: none;">// 表单数据将显示在这里</div>
+    </div>
+  </div>
+
+  <script>
+    // 页签切换逻辑
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        
+        tab.classList.add('active');
+        const tabName = tab.getAttribute('data-tab');
+        document.getElementById(`${tabName}-tab`).classList.add('active');
+      });
+    });
+
+    // 保存的表单设计数据
+    let savedFormJson = null;
+
+    // 初始化设计模式函数
+    function initDesignMode() {
+      FormBuilder.init({
+        element: '#form-designer-container',
+        mode: 'design',
+        debug: true, // 设置为固定值，不允许前端修改
+        data: savedFormJson, // 如果有保存的设计，则加载它
+        onSave: (designJson, showJson = true) => {
+          console.log('表单设计已保存:', designJson);
+          savedFormJson = designJson;
+          
+          // 根据onSave回调的showJson参数决定是否显示JSON
+          if (showJson !== false) {
+            document.getElementById('design-json').textContent = JSON.stringify(designJson, null, 2);
+            document.getElementById('design-json').style.display = 'block';
+          } else {
+            document.getElementById('design-json').style.display = 'none';
+          }
+        }
+      });
+    }
+    
+    // 页面加载时初始化设计模式
+    window.addEventListener('load', () => {
+      initDesignMode();
+    });
+
+      // 保存按钮事件
+      document.getElementById('save-design').addEventListener('click', () => {
+        FormBuilder.saveDesign();
+      });
+
+    // 切换到运行模式时初始化
+    document.querySelector('.tab[data-tab="runtime"]').addEventListener('click', () => {
+      if (savedFormJson) {
+        // 如果有保存的设计，则初始化运行模式
+        initRuntimeMode();
+      } else {
+        document.getElementById('form-runtime-container').innerHTML = 
+          '<div style="padding: 20px; color: #f56c6c;">请先在设计模式中创建并保存表单设计</div>';
+      }
+    });
+    
+    // 初始化运行模式函数
+    function initRuntimeMode() {
+      FormBuilder.init({
+        element: '#form-runtime-container',
+        mode: 'runtime',
+        data: savedFormJson,
+        debug: true, // 设置为固定值，不允许前端修改
+        onSubmit: (formData, showJson = true) => {
+          console.log('用户提交的数据:', formData);
+          
+          // 根据onSubmit回调的showJson参数决定是否显示JSON
+          if (showJson !== false) {
+            document.getElementById('form-data').textContent = JSON.stringify(formData, null, 2);
+            document.getElementById('form-data').style.display = 'block';
+          } else {
+            document.getElementById('form-data').style.display = 'none';
+          }
+        }
+      });
+    }
+    
+
+    
+    // 切换到设计模式时重新初始化
+    document.querySelector('.tab[data-tab="design"]').addEventListener('click', () => {
+      // 重新初始化设计模式
+      initDesignMode();
+    });
+  </script>
+</body>
+</html>

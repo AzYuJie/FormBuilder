@@ -126,7 +126,10 @@ Initialize the FormBuilder SDK.
 
 ### FormBuilder.saveDesign()
 
-Save the current form design (only in design mode).
+Save the current form design configuration.
+
+**Design Mode:** Saves the current form design being edited.
+**Runtime Mode:** Saves the design configuration that the form is based on.
 
 **Note:** In debug mode, it calls the onSave callback and displays the design JSON; in non-debug mode, it calls the onSave callback but does not display the design JSON.
 

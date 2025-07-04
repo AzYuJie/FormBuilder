@@ -69,12 +69,18 @@ class FormBuilder {
   }
 
   /**
-   * 保存设计（仅设计模式）
+   * 保存设计配置
    * @returns {Object|null} 表单设计JSON或null
    */
   saveDesign() {
-    if (this.mode !== 'design' || !this.instance) {
-      console.warn('saveDesign 方法仅在设计模式下可用');
+    if (!this.instance) {
+      console.warn('FormBuilder 实例未初始化');
+      return null;
+    }
+    
+    // 检查实例是否有saveDesign方法
+    if (typeof this.instance.saveDesign !== 'function') {
+      console.warn('当前模式不支持saveDesign方法');
       return null;
     }
     

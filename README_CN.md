@@ -85,7 +85,10 @@ npm install form-builder-sdk
 
 ### FormBuilder.saveDesign()
 
-保存当前表单设计（仅设计模式）。
+保存当前表单设计配置。
+
+**设计模式：** 保存当前正在编辑的表单设计。
+**运行模式：** 保存表单所基于的设计配置。
 
 **说明：** 在调试模式下，会调用 onSave 回调并显示设计JSON；在非调试模式下，会调用 onSave 回调但不显示设计JSON。
 

@@ -1333,49 +1333,32 @@ export default class DesignMode {
         fieldControl = createElement('input', { type: 'time' }, 'fb-field-control');
         break;
       case 'select':
-        fieldControl = createElement('select', {}, 'fb-field-control');
-        const selectOptions = properties.options || fieldType.options || [];
-        selectOptions.forEach(option => {
-          const optionElement = createElement('option', { 
-            value: typeof option === 'string' ? option : option.value 
-          }, null, typeof option === 'string' ? option : option.label);
-          fieldControl.appendChild(optionElement);
-        });
+        fieldControl = createElement('div', {}, 'fb-field-control fb-select-design');
+        // 设计模式下显示下拉框样式的占位符
+        const selectPlaceholder = createElement('div', {}, 'fb-design-select-placeholder', '下拉选择框 - 点击右侧属性面板配置选项');
+        const selectArrow = createElement('div', {}, 'fb-design-select-arrow', '▼');
+        fieldControl.appendChild(selectPlaceholder);
+        fieldControl.appendChild(selectArrow);
         break;
       case 'radio':
-        fieldControl = createElement('div', {}, 'fb-field-control fb-radio-group');
-        const radioOptions = properties.options || fieldType.options || [];
-        radioOptions.forEach((option, index) => {
-          const radioWrapper = createElement('div', {}, 'fb-radio-item');
-          const radioInput = createElement('input', { 
-            type: 'radio', 
-            name: `radio_${fieldId}`,
-            value: typeof option === 'string' ? option : option.value,
-            id: `${fieldId}_radio_${index}`
-          }, 'fb-radio-input');
-          const radioLabel = createElement('label', { 
-            for: `${fieldId}_radio_${index}` 
-          }, 'fb-radio-label', typeof option === 'string' ? option : option.label);
-          appendChildren(radioWrapper, [radioInput, radioLabel]);
-          fieldControl.appendChild(radioWrapper);
-        });
+        fieldControl = createElement('div', {}, 'fb-field-control fb-radio-group fb-radio-design');
+        // 设计模式下显示单选框样式的占位符
+        const radioPlaceholder = createElement('div', {}, 'fb-design-radio-placeholder');
+        const radioIcon = createElement('div', {}, 'fb-design-radio-icon', '◯');
+        const radioText = createElement('div', {}, 'fb-design-radio-text', '单选框组 - 点击右侧属性面板配置选项');
+        radioPlaceholder.appendChild(radioIcon);
+        radioPlaceholder.appendChild(radioText);
+        fieldControl.appendChild(radioPlaceholder);
         break;
       case 'checkbox':
-        fieldControl = createElement('div', {}, 'fb-field-control fb-checkbox-group');
-        const checkboxOptions = properties.options || fieldType.options || [];
-        checkboxOptions.forEach((option, index) => {
-          const checkboxWrapper = createElement('div', {}, 'fb-checkbox-item');
-          const checkboxInput = createElement('input', { 
-            type: 'checkbox', 
-            value: typeof option === 'string' ? option : option.value,
-            id: `${fieldId}_checkbox_${index}`
-          }, 'fb-checkbox-input');
-          const checkboxLabel = createElement('label', { 
-            for: `${fieldId}_checkbox_${index}` 
-          }, 'fb-checkbox-label', typeof option === 'string' ? option : option.label);
-          appendChildren(checkboxWrapper, [checkboxInput, checkboxLabel]);
-          fieldControl.appendChild(checkboxWrapper);
-        });
+        fieldControl = createElement('div', {}, 'fb-field-control fb-checkbox-group fb-checkbox-design');
+        // 设计模式下显示复选框样式的占位符
+        const checkboxPlaceholder = createElement('div', {}, 'fb-design-checkbox-placeholder');
+        const checkboxIcon = createElement('div', {}, 'fb-design-checkbox-icon', '☐');
+        const checkboxText = createElement('div', {}, 'fb-design-checkbox-text', '复选框组 - 点击右侧属性面板配置选项');
+        checkboxPlaceholder.appendChild(checkboxIcon);
+        checkboxPlaceholder.appendChild(checkboxText);
+        fieldControl.appendChild(checkboxPlaceholder);
         break;
 
       default:

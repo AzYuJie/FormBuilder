@@ -15,6 +15,8 @@
   position: relative;
   color: #303133;
   font-size: 14px;
+  z-index: 1; /* 确保容器有基础层级 */
+  isolation: isolate; /* 创建新的层叠上下文，避免与外部元素冲突 */
 }
 
 /* 设计模式布局 */
@@ -26,6 +28,8 @@
   border: 1px solid #dcdfe6;
   border-radius: 4px;
   overflow: hidden;
+  position: relative;
+  z-index: 2; /* 设计容器层级 */
 }
 
 /* 左侧区域 - 数据域 */
@@ -35,6 +39,9 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  position: relative;
+  z-index: 15; /* 提高数据域面板层级 */
+  isolation: isolate; /* 创建独立的层叠上下文 */
 }
 
 /* 标签页 */
@@ -190,6 +197,133 @@
   box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
 }
 
+/* 设计模式占位符样式 */
+.fb-design-placeholder {
+  padding: 20px;
+  text-align: center;
+  color: #909399;
+  font-size: 13px;
+  background-color: #f8f9fa;
+  border: 2px dashed #d9d9d9;
+  border-radius: 6px;
+  margin: 8px 0;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+.fb-design-placeholder:hover {
+  color: #606266;
+  border-color: #c0c4cc;
+  background-color: #f5f7fa;
+}
+
+/* 设计模式下拉框样式 */
+.fb-select-design {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  background-color: #f8f9fa;
+  border: 2px dashed #d9d9d9 !important;
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.fb-select-design:hover {
+  border-color: #c0c4cc !important;
+  background-color: #f5f7fa;
+}
+
+.fb-design-select-placeholder {
+  flex: 1;
+  color: #909399;
+  font-size: 13px;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+.fb-design-select-arrow {
+  color: #c0c4cc;
+  font-size: 12px;
+  margin-left: 8px;
+  transition: transform 0.3s ease;
+}
+
+.fb-select-design:hover .fb-design-select-arrow {
+  color: #909399;
+  transform: translateY(1px);
+}
+
+/* 设计模式单选框样式 */
+.fb-radio-design {
+  background-color: #f8f9fa;
+  border: 2px dashed #d9d9d9 !important;
+  border-radius: 6px;
+  padding: 12px;
+  min-height: 50px;
+  transition: all 0.3s ease;
+}
+
+.fb-radio-design:hover {
+  border-color: #c0c4cc !important;
+  background-color: #f5f7fa;
+}
+
+.fb-design-radio-placeholder {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fb-design-radio-icon {
+  color: #c0c4cc;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.fb-design-radio-text {
+  color: #909399;
+  font-size: 13px;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+/* 设计模式复选框样式 */
+.fb-checkbox-design {
+  background-color: #f8f9fa;
+  border: 2px dashed #d9d9d9 !important;
+  border-radius: 6px;
+  padding: 12px;
+  min-height: 50px;
+  transition: all 0.3s ease;
+}
+
+.fb-checkbox-design:hover {
+  border-color: #c0c4cc !important;
+  background-color: #f5f7fa;
+}
+
+.fb-design-checkbox-placeholder {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fb-design-checkbox-icon {
+  color: #c0c4cc;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.fb-design-checkbox-text {
+  color: #909399;
+  font-size: 13px;
+  font-style: italic;
+  line-height: 1.5;
+}
+
 .fb-property-textarea::placeholder {
   color: #c0c4cc;
   font-size: 11px;
@@ -200,20 +334,33 @@
 .fb-checkbox-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px; /* 减少选项间距 */
+  min-height: fit-content;
+  overflow: visible;
+  padding: 12px;
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .fb-radio-item,
 .fb-checkbox-item {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 10px; /* 增加输入框和标签间距 */
+  min-height: 32px; /* 增加最小高度 */
+  flex-shrink: 0;
+  margin-bottom: 3px; /* 减少上下间距 */
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
 }
 
 .fb-radio-input,
 .fb-checkbox-input {
   margin: 0;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .fb-radio-label,
@@ -222,6 +369,14 @@
   color: #606266;
   cursor: pointer;
   user-select: none;
+  line-height: 1.4;
+  word-wrap: break-word;
+  flex: 1;
+}
+
+.fb-radio-item:hover,
+.fb-checkbox-item:hover {
+  background-color: #f8f9fa;
 }
 
 .fb-radio-label:hover,
@@ -260,6 +415,12 @@
   padding: 12px;
   background-color: #fafafa;
   border: 1px dashed #d9d9d9;
+  min-height: fit-content;
+  height: auto;
+  overflow: visible;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 textarea.fb-field-control {
@@ -332,6 +493,7 @@ textarea.fb-field-control {
   overflow: auto;
   display: flex;
   flex-direction: column;
+  z-index: 5; /* 设计画布层级，低于侧边栏 */
 }
 
 .fb-canvas-toolbar {
@@ -342,7 +504,7 @@ textarea.fb-field-control {
   align-items: center;
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 200; /* 提高工具栏层级 */
 }
 
 .fb-toolbar-button {
@@ -438,6 +600,9 @@ textarea.fb-field-control {
   border-left: 1px solid #dcdfe6;
   padding: 15px;
   overflow-y: auto;
+  position: relative;
+  z-index: 20; /* 提高属性面板层级 */
+  isolation: isolate; /* 创建独立的层叠上下文 */
 }
 
 .fb-property-group {
@@ -504,27 +669,68 @@ textarea.fb-field-control {
 .fb-runtime-container {
   width: 100%;
   height: 100%;
-  padding: 20px;
   background-color: #fff;
   border-radius: 4px;
   overflow-x: hidden; /* 防止在移动端出现水平滚动 */
   -webkit-overflow-scrolling: touch; /* 在iOS上提供平滑滚动 */
+  position: relative;
+  z-index: 1; /* 运行时容器基础层级 */
+}
+
+/* 表单主容器 */
+.fb-form-main-container {
+  width: 100%;
+  min-height: 100%;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 表单内容区域 */
+.fb-form-content-area {
+  flex: 1;
+  width: 100%;
+  padding: 20px;
+  padding-bottom: 120px; /* 增加与提交按钮间距20px，从100px调整为120px */
+  position: relative;
+  z-index: 3;
+  overflow: visible;
 }
 
 .fb-runtime-grid {
   display: grid;
   width: 100%;
-  gap: 10px;
+  gap: 24px; /* 增加组件间距，确保足够的分离 */
   margin: 0 auto; /* 居中显示 */
+  position: relative;
+  z-index: 4; /* 运行时网格层级 */
+  min-height: fit-content;
+  padding: 8px; /* 为网格添加内边距 */
 }
 
 .fb-runtime-cell {
-  padding: 10px;
-  transition: background-color 0.2s ease; /* 添加过渡效果 */
+  transition: all 0.3s ease; /* 添加过渡效果 */
+  min-height: 80px;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 5; /* 运行时单元格层级 */
+  isolation: isolate; /* 创建独立的层叠上下文 */
+  /* 其他样式通过JavaScript动态设置以适应不同字段类型 */
 }
 
 .fb-form-field {
-  margin-bottom: 15px;
+  margin-bottom: 25px; /* 增加字段间距10px，从15px调整为25px */
+  min-height: fit-content;
+  overflow: visible;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 6; /* 表单字段层级 */
+  isolation: isolate; /* 创建独立的层叠上下文 */
 }
 
 .fb-form-label {
@@ -547,6 +753,9 @@ textarea.fb-field-control {
   -webkit-appearance: none; /* 移除iOS默认样式 */
   -moz-appearance: none; /* 移除Firefox默认样式 */
   appearance: none; /* 标准 */
+  position: relative;
+  z-index: 7; /* 表单控件层级 */
+  background-color: #fff; /* 确保背景色 */
 }
 
 .fb-form-control:focus {
@@ -569,17 +778,40 @@ textarea.fb-field-control {
   display: block; /* 确保错误消息始终占据一行 */
 }
 
+/* 提交按钮容器 */
+.fb-submit-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000; /* 确保提交按钮始终在最上层 */
+  background-color: #fff;
+  border-top: 1px solid #e4e7ed;
+  padding: 15px 20px;
+  text-align: center;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+  isolation: isolate; /* 创建独立的层叠上下文 */
+  backdrop-filter: blur(10px); /* 添加背景模糊效果 */
+  -webkit-backdrop-filter: blur(10px); /* Safari支持 */
+}
+
 .fb-submit-button {
-  padding: 10px 20px;
+  padding: 12px 24px;
   background-color: #409eff;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 16px;
+  font-weight: 500;
   transition: all 0.3s;
   -webkit-tap-highlight-color: transparent; /* 移除移动端点击高亮 */
   touch-action: manipulation; /* 优化触摸操作 */
+  display: inline-block;
+  min-width: 120px;
+  position: relative;
+  z-index: 1001; /* 确保按钮在最上层，高于容器 */
+  box-shadow: 0 2px 4px rgba(64, 158, 255, 0.3);
 }
 
 .fb-submit-button:hover {
@@ -594,7 +826,7 @@ textarea.fb-field-control {
 /* 拖拽相关样式 */
 .fb-dragging {
   opacity: 0.4; /* 调整原始元素的不透明度 */
-  z-index: 1000;
+  z-index: 100; /* 拖拽元素层级，高于普通组件但低于拖拽幽灵 */
   transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
   pointer-events: none; /* 防止原始元素捕获事件 */
   transform: scale(0.98); /* 轻微缩小效果 */
@@ -609,7 +841,7 @@ textarea.fb-field-control {
   border-radius: 4px;
   padding: 10px;
   pointer-events: none; /* 确保不会捕获鼠标事件 */
-  z-index: 1001; /* 确保在最上层 */
+  z-index: 9999; /* 确保拖拽幽灵在最上层 */
   opacity: 0.9; /* 提高幽灵元素的不透明度 */
   box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.15); /* 增强阴影效果 */
   cursor: grabbing;
@@ -631,7 +863,7 @@ textarea.fb-field-control {
   border: 2px solid #409eff;
   transform: translate(-50%, -50%);
   pointer-events: none;
-  z-index: 1002; /* 确保在幽灵元素之上 */
+  z-index: 10000; /* 确保拖拽光标在最顶层 */
   box-shadow: 0 0 8px rgba(64, 158, 255, 0.8);
   will-change: transform, width, height, box-shadow, background-color;
   transition: width 0.15s cubic-bezier(0.34, 1.56, 0.64, 1),
@@ -733,15 +965,56 @@ textarea.fb-field-control {
   }
   
   .fb-runtime-grid {
-    gap: 8px;
+    gap: 20px; /* 移动端组件间距 */
+    grid-auto-rows: minmax(80px, auto); /* 确保行高自适应 */
+    padding: 12px; /* 移动端网格内边距 */
   }
   
   .fb-runtime-cell {
-    padding: 8px;
+    min-height: 80px;
+    /* 移动端单元格样式通过JavaScript动态设置 */
   }
   
   .fb-form-field {
-    margin-bottom: 12px;
+    margin-bottom: 16px; /* 移动端字段间距 */
+  }
+  
+  /* 移动端单选框和复选框组优化 */
+  .fb-radio-group,
+  .fb-checkbox-group {
+    gap: 5px; /* 减少移动端选项间距 */
+    padding: 10px 0;
+  }
+  
+  .fb-radio-item,
+  .fb-checkbox-item {
+    min-height: 28px;
+    margin-bottom: 2px; /* 减少移动端上下间距 */
+  }
+  
+  .fb-radio-label,
+  .fb-checkbox-label {
+    font-size: 14px;
+  }
+  
+  /* 移动端布局优化 */
+  .fb-form-content-area {
+    padding: 15px;
+    padding-bottom: 140px; /* 增加移动端与提交按钮间距20px，从120px调整为140px */
+  }
+  
+  .fb-submit-container {
+    padding: 20px 15px;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .fb-submit-button {
+    width: 100%;
+    max-width: 300px;
+    padding: 14px 20px;
+    font-size: 16px;
+    border-radius: 8px;
+    line-height: 1.5;
   }
   
   .fb-form-label {

@@ -112,15 +112,38 @@ export default class RuntimeMode {
     
     clearElement(this.runtimeContainer);
     
+    // 创建表单主容器
+    const formMainContainer = createElement('div', {}, 'fb-form-main-container');
+    setStyles(formMainContainer, {
+      position: 'relative',
+      zIndex: '1',
+      width: '100%',
+      minHeight: '100%',
+      display: 'flex',
+      flexDirection: 'column'
+    });
+    
+    // 创建表单内容区域
+    const formContentArea = createElement('div', {}, 'fb-form-content-area');
+    setStyles(formContentArea, {
+      position: 'relative',
+      zIndex: '2',
+      flex: '1',
+      width: '100%',
+      paddingBottom: '80px' // 为提交按钮留出空间
+    });
+    
     // 创建表单网格
     this.formGrid = createElement('div', {}, 'fb-runtime-grid');
-    this.runtimeContainer.appendChild(this.formGrid);
     
     // 设置网格布局
     const { rows, columns, cells } = this.designData.layout;
     
-    // 设置网格模板
-    const gridTemplateRows = rows.map(row => row.height || 'auto').join(' ');
+    // 设置网格模板 - 完全自适应行高以防止内容溢出
+    const gridTemplateRows = rows.map(row => {
+      // 所有行都使用自适应高度，确保内容不会被截断
+      return 'minmax(80px, auto)';
+    }).join(' ');
     const gridTemplateColumns = columns.map(col => col.width || '1fr').join(' ');
     
     // 计算表单宽度
@@ -129,13 +152,10 @@ export default class RuntimeMode {
     
     switch (this.widthMode) {
       case 'min':
-        // 最小宽度模式
         formWidth = this.minWidth;
         break;
       case 'auto':
-        // 自动宽度模式 - 当有多列时，每列最小宽度的总和
         if (columnCount > 1) {
-          // 每列最小宽度 + 间隙
           const minColumnWidth = parseInt(this.minWidth) / columnCount;
           formWidth = `calc(${minColumnWidth * columnCount}px + ${(columnCount - 1) * 10}px)`;
         } else {
@@ -143,7 +163,6 @@ export default class RuntimeMode {
         }
         break;
       case 'fixed':
-        // 固定宽度模式
         formWidth = this.fixedWidth;
         break;
       default:
@@ -154,7 +173,9 @@ export default class RuntimeMode {
       gridTemplateRows,
       gridTemplateColumns,
       width: formWidth,
-      margin: '0 auto' // 居中显示
+      margin: '0 auto',
+      position: 'relative',
+      zIndex: '3'
     });
     
     // 渲染单元格
@@ -167,10 +188,21 @@ export default class RuntimeMode {
         'data-field-id': fieldId || ''
       }, 'fb-runtime-cell');
       
-      // 设置网格位置
+      // 设置网格位置和样式
       setStyles(cellElement, {
         gridRow: `${row + 1} / span ${rowSpan || 1}`,
-        gridColumn: `${col + 1} / span ${colSpan || 1}`
+        gridColumn: `${col + 1} / span ${colSpan || 1}`,
+        minHeight: '80px',
+        height: 'auto',
+        overflow: 'visible',
+        position: 'relative',
+        zIndex: '4',
+        padding: '12px',
+        margin: '4px',
+        borderRadius: '6px',
+        backgroundColor: '#fafbfc',
+        border: '1px solid #e4e7ed',
+        boxSizing: 'border-box'
       });
       
       // 如果单元格有字段，渲染字段
@@ -181,9 +213,37 @@ export default class RuntimeMode {
       this.formGrid.appendChild(cellElement);
     });
     
+    // 将表单网格添加到内容区域
+    formContentArea.appendChild(this.formGrid);
+    
+    // 创建提交按钮容器（固定在底部）
+    const submitContainer = createElement('div', {}, 'fb-submit-container');
+    setStyles(submitContainer, {
+      position: 'fixed',
+      bottom: '0',
+      left: '0',
+      right: '0',
+      zIndex: '100',
+      backgroundColor: '#fff',
+      borderTop: '1px solid #e4e7ed',
+      padding: '15px 20px',
+      textAlign: 'center',
+      boxShadow: '0 -2px 8px rgba(0, 0, 0, 0.1)'
+    });
+    
     // 创建提交按钮
     this.submitButton = createElement('button', { type: 'button' }, 'fb-submit-button', '提交');
-    this.runtimeContainer.appendChild(this.submitButton);
+    setStyles(this.submitButton, {
+      position: 'relative',
+      zIndex: '101'
+    });
+    
+    submitContainer.appendChild(this.submitButton);
+    
+    // 组装布局结构
+    formMainContainer.appendChild(formContentArea);
+    this.runtimeContainer.appendChild(formMainContainer);
+    this.runtimeContainer.appendChild(submitContainer);
     
     // 添加提交按钮点击事件
     this.cleanupFunctions.push(
@@ -524,6 +584,47 @@ export default class RuntimeMode {
       fieldContainer.appendChild(errorMessage);
     }
     
+    // 对于单选框和复选框组，动态调整容器高度和样式
+    if (fieldConfig.type === 'radio' || fieldConfig.type === 'checkbox') {
+      const options = properties.options || [];
+      if (options.length > 0) {
+        // 计算所需的最小高度：每个选项36px + 间距 + 标签高度 + 内边距
+        const estimatedHeight = Math.max(120, (options.length * 40) + 80);
+        
+        // 设置单元格样式 - 确保足够的空间
+        setStyles(cellElement, {
+          minHeight: `${estimatedHeight}px`,
+          height: 'auto',
+          padding: '16px',
+          backgroundColor: '#f8f9fa',
+          border: '2px solid #e9ecef'
+        });
+        
+        // 设置字段容器样式
+        setStyles(fieldContainer, {
+          minHeight: 'fit-content',
+          height: 'auto',
+          overflow: 'visible',
+          padding: '8px 0',
+          gap: '12px',
+          display: 'flex',
+          flexDirection: 'column'
+        });
+        
+        // 设置字段控件样式
+        setStyles(fieldControl, {
+          minHeight: 'fit-content',
+          height: 'auto',
+          overflow: 'visible',
+          padding: '12px',
+          backgroundColor: '#ffffff',
+          border: '1px solid #dee2e6',
+          borderRadius: '8px',
+          gap: '10px'
+        });
+      }
+    }
+    
     cellElement.appendChild(fieldContainer);
   }
   
@@ -626,6 +727,33 @@ export default class RuntimeMode {
     
     // 重新渲染表单
     this.renderForm();
+  }
+  
+  /**
+   * 保存设计配置（运行模式下获取当前的设计数据）
+   * @returns {Object|null} 设计数据或null
+   */
+  saveDesign() {
+    if (!this.designData) {
+      console.warn('运行模式下没有可用的设计数据');
+      return null;
+    }
+    
+    // 深拷贝设计数据
+    const designData = deepClone(this.designData);
+    
+    // 调用保存回调（如果有的话）
+    if (typeof this.config.onSave === 'function') {
+      // 如果调试模式未定义或为true，则调用onSave回调显示JSON
+      if (this.config.debug !== false) {
+        this.config.onSave(designData);
+      } else {
+        // 非调试模式下，仍然调用onSave但传递false作为第二个参数表示不显示JSON
+        this.config.onSave(designData, false);
+      }
+    }
+    
+    return designData;
   }
   
   /**
